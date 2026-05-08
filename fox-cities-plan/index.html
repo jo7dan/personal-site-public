@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Summer 26 Training Plan</title><style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, serif; background: #0a0f1a; color: #e2e8f0; min-height: 100vh; }
+
+  #header { background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0f172a 100%); border-bottom: 1px solid #1e3a5f; padding: 2rem 1.5rem 1.5rem; }
+  #header .inner { max-width: 800px; margin: 0 auto; }
+  .eyebrow { font-size: 0.7rem; letter-spacing: 0.2em; color: #64748b; text-transform: uppercase; margin-bottom: 0.5rem; }
+  h1 { font-size: 1.8rem; font-weight: bold; color: #f1f5f9; line-height: 1.2; }
+  .stats { margin-top: 0.75rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .stat-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+  .stat-value { font-size: 0.95rem; color: #93c5fd; font-weight: 600; }
+
+  #legend-bar { background: #0d1420; border-bottom: 1px solid #1e2d40; padding: 0.75rem 1.5rem; }
+  #legend-bar .inner { max-width: 800px; margin: 0 auto; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .legend-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+  .legend-item { display: flex; align-items: center; gap: 0.35rem; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-text { font-size: 0.7rem; color: #94a3b8; }
+
+  #chart-section { background: #0d1420; padding: 1rem 1.5rem; border-bottom: 1px solid #1e2d40; }
+  #chart-section .inner { max-width: 800px; margin: 0 auto; }
+  .chart-title { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  #chart { display: flex; gap: 2px; align-items: flex-end; height: 48px; }
+  .chart-bar { flex: 1; border-radius: 2px 2px 0 0; cursor: pointer; transition: opacity 0.15s; }
+  .chart-bar:hover { opacity: 0.8; }
+  .chart-labels { display: flex; justify-content: space-between; margin-top: 0.25rem; }
+  .chart-labels span { font-size: 0.6rem; color: #475569; }
+
+  #weeks { max-width: 800px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+
+  .week-card { margin-bottom: 0.5rem; border-radius: 8px; overflow: hidden; border: 1px solid #1e2d40; transition: border-color 0.2s; }
+  .week-card.open { border-color: var(--accent-44); }
+
+  .week-header { background: #0d1420; padding: 0.85rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: background-color 0.15s; user-select: none; }
+  .week-card.open .week-header { background: #111827; }
+  .week-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .week-meta { flex: 1; }
+  .week-title-row { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+  .week-num { font-size: 0.75rem; font-weight: 700; color: #f1f5f9; }
+  .week-dates { font-size: 0.65rem; color: #64748b; }
+  .week-phase { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .week-goal { font-size: 0.7rem; color: #94a3b8; margin-top: 0.15rem; }
+  .week-miles-box { text-align: right; flex-shrink: 0; }
+  .week-miles-num { font-size: 1rem; font-weight: 700; }
+  .week-miles-label { font-size: 0.6rem; color: #64748b; }
+  .week-chevron { color: #475569; font-size: 0.75rem; margin-left: 0.25rem; }
+
+  .week-body { background: #080d17; display: none; }
+  .week-card.open .week-body { display: block; }
+
+  .day-row { border-top: 1px solid #1a2535; }
+  .day-header { padding: 0.65rem 1rem 0.65rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; transition: background-color 0.15s; }
+  .day-row.open .day-header { background: #0d1520; }
+  .day-label { width: 32px; font-size: 0.65rem; color: #475569; font-weight: 600; flex-shrink: 0; }
+  .day-info { flex: 1; min-width: 0; }
+  .day-workout { font-size: 0.72rem; color: #cbd5e1; line-height: 1.4; }
+  .day-pace { font-size: 0.63rem; color: #475569; margin-top: 0.1rem; }
+  .day-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+  .day-mi { font-size: 0.7rem; font-weight: 600; color: #93c5fd; }
+  .day-chevron { color: #475569; font-size: 0.65rem; }
+
+  .day-notes { display: none; padding: 0.5rem 1rem 0.75rem 3.25rem; background: #060b14; }
+  .day-row.open .day-notes { display: block; }
+  .day-notes-inner { font-size: 0.68rem; color: #94a3b8; line-height: 1.6; border-left: 2px solid var(--accent-44); padding-left: 0.75rem; }
+
+  .week-total { padding: 0.6rem 1rem; border-top: 1px solid #1a2535; display: flex; justify-content: flex-end; }
+  .week-total span { font-size: 0.65rem; color: #475569; }
+  .week-total strong { font-weight: 600; }
+
+  #race-strategy { margin-top: 1.5rem; padding: 1.25rem; background: #0d1420; border-radius: 8px; border: 1px solid rgba(127,29,29,0.27); }
+  .strategy-title { font-size: 0.65rem; color: #ef4444; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+  .strategy-body { font-size: 0.75rem; color: #cbd5e1; line-height: 1.8; }
+  .strategy-body strong { color: #fca5a5; }
+</style></head> <body> <div id="header"> <div class="inner"> <div class="eyebrow">Fox Cities Marathon · September 20, 2026</div> <h1>19-Week Sub-3:00 Plan</h1> <div class="stats"> <div><div class="stat-label">Goal Pace</div><div class="stat-value">6:51 / mile</div></div> <div><div class="stat-label">Peak Week</div><div class="stat-value">~70 miles</div></div> <div><div class="stat-label">Race Date</div><div class="stat-value">Sep 20, 2026</div></div> </div> </div> </div> <div id="legend-bar"> <div class="inner"> <span class="legend-label">Phases:</span> <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div><span class="legend-text">Transition</span></div> <div class="legend-item"><div class="legend-dot" style="background:#6ee7b7"></div><span class="legend-text">Base Build</span></div> <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div><span class="legend-text">Sharpening</span></div> <div class="legend-item"><div class="legend-dot" style="background:#fdba74"></div><span class="legend-text">Peak & Tune-up</span></div> <div class="legend-item"><div class="legend-dot" style="background:#d8b4fe"></div><span class="legend-text">Taper</span></div> <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div><span class="legend-text">Race Week</span></div> </div> </div> <div id="chart-section"> <div class="inner"> <div class="chart-title">Weekly Mileage Overview — click a bar to jump to that week</div> <div id="chart"></div> <div class="chart-labels"><span>Wk 1</span><span>Wk 19</span></div> </div> </div> <div id="weeks"></div> <script>
+const phaseAccent = {
+  "Transition":    "#94a3b8",
+  "Base Build":    "#6ee7b7",
+  "Sharpening":    "#93c5fd",
+  "Peak & Tune-up":"#fdba74",
+  "Taper":         "#d8b4fe",
+  "Race Week":     "#fca5a5",
+};
+
+const weeks = [
+  { week:1, phase:"Transition", dates:"May 6–12", totalMiles:47, goal:"Recover from Door County, maintain fitness", days:[
+    {day:"Mon",workout:"Rest or 4 miles easy",miles:4,pace:"8:15–8:45",notes:"Optional. Take it if legs are still heavy from Door County."},
+    {day:"Tue",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:"Strides: 6×100m at ~6:00 effort, full recovery walk between each. Start strides habit now."},
+    {day:"Wed",workout:"10 miles easy",miles:10,pace:"8:15–8:45",notes:"Pure aerobic. No pressure."},
+    {day:"Thu",workout:"6 miles easy",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:"Second strides session of the week."},
+    {day:"Sat",workout:"7 miles easy",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"14 miles easy",miles:14,pace:"8:15–8:45",notes:"Easy effort. You ran 20 on April 18 — this is just maintenance, not a push."},
+  ]},
+  { week:2, phase:"Transition", dates:"May 13–19", totalMiles:50, goal:"Step up to working mileage, first real tempo", days:[
+    {day:"Mon",workout:"Rest or 4 miles easy",miles:4,pace:"8:15–8:45",notes:"Optional."},
+    {day:"Tue",workout:"2mi WU + 5mi @ 7:00 + 1mi CD",miles:8,pace:"WU: 8:30 | Tempo: 7:00 | CD: 8:30",notes:"Total: 8 miles. First real threshold session. Should feel comfortably hard — you could speak in short phrases."},
+    {day:"Wed",workout:"11 miles easy",miles:11,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"16 miles easy",miles:16,pace:"8:00–8:20",notes:"Bump long run back up. Comfortable effort throughout."},
+  ]},
+  { week:3, phase:"Base Build", dates:"May 20–26", totalMiles:55, goal:"Establish rhythm, build LT confidence", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:"Day after long run — keep it genuinely easy."},
+    {day:"Tue",workout:"2mi WU + 6mi @ 7:00 + 1mi CD",miles:9,pace:"WU: 8:30 | Tempo: 7:00 | CD: 8:30",notes:"Total: 9 miles. Extending the tempo block by 1 mile."},
+    {day:"Wed",workout:"12 miles easy",miles:12,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"17 miles easy",miles:17,pace:"8:00–8:20",notes:"Still easy. Don't introduce MP work yet."},
+  ]},
+  { week:4, phase:"Base Build", dates:"May 27–Jun 2", totalMiles:58, goal:"First MP miles in a long run", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 7mi @ 6:58 + 1mi CD",miles:10,pace:"WU: 8:30 | Tempo: 6:58 | CD: 8:30",notes:"Total: 10 miles. Nudge tempo pace slightly faster."},
+    {day:"Wed",workout:"13 miles easy",miles:13,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"18 miles: 12 easy + 6 @ 6:51",miles:18,pace:"Miles 1–12: 8:15 | Miles 13–18: 6:51",notes:"First MP segment in a long run. Back-load the effort. Miles 1–12 must feel genuinely easy or the MP miles will suffer."},
+  ]},
+  { week:5, phase:"Base Build", dates:"Jun 3–9", totalMiles:55, goal:"Down week — recover, absorb", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:"Down week. Let week 4 absorb."},
+    {day:"Tue",workout:"2mi WU + 5mi @ 6:58 + 1mi CD",miles:8,pace:"WU: 8:30 | Tempo: 6:58 | CD: 8:30",notes:"Total: 8 miles. Shorter tempo on down week."},
+    {day:"Wed",workout:"11 miles easy",miles:11,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"5 miles easy + 6 strides",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"16 miles easy",miles:16,pace:"8:00–8:20",notes:"Down week long run. Easy pace, no MP work."},
+  ]},
+  { week:6, phase:"Base Build", dates:"Jun 10–16", totalMiles:61, goal:"Push mileage, LT intervals introduced", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 4×2mi @ 6:55 (90s jog) + 1mi CD",miles:11,pace:"WU: 8:30 | Intervals: 6:55 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 11 miles. Switching from continuous tempo to LT intervals — allows slightly faster pace with same physiological stimulus. 90 seconds easy jog between each 2-mile rep."},
+    {day:"Wed",workout:"14 miles easy",miles:14,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"19 miles: 12 easy + 7 @ 6:51",miles:19,pace:"Miles 1–12: 8:15 | Miles 13–19: 6:51",notes:"7 MP miles now. This is where the real marathon adaptation starts."},
+  ]},
+  { week:7, phase:"Base Build", dates:"Jun 17–23", totalMiles:63, goal:"Highest mileage yet, consolidate LT gains", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 5×2mi @ 6:52 (90s jog) + 1mi CD",miles:13,pace:"WU: 8:30 | Intervals: 6:52 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 13 miles. Five reps now. Pace nudges down slightly."},
+    {day:"Wed",workout:"14 miles easy",miles:14,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"20 miles: 12 easy + 8 @ 6:51",miles:20,pace:"Miles 1–12: 8:15 | Miles 13–20: 6:51",notes:"8 MP miles. This is a serious workout. Fuel well the day before and during (every 30–40 min on the run)."},
+  ]},
+  { week:8, phase:"Sharpening", dates:"Jun 24–Jun 30", totalMiles:57, goal:"Down week — critical recovery before peak phase", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:"Down week after a hard block."},
+    {day:"Tue",workout:"2mi WU + 5mi @ 6:55 + 1mi CD",miles:8,pace:"WU: 8:30 | Tempo: 6:55 | CD: 8:30",notes:"Total: 8 miles. Shorter, back to continuous tempo on down week."},
+    {day:"Wed",workout:"12 miles easy",miles:12,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"17 miles easy",miles:17,pace:"8:00–8:20",notes:"No MP work. Just miles."},
+  ]},
+  { week:9, phase:"Sharpening", dates:"Jul 1–7", totalMiles:65, goal:"Mileage peaks begin, LT pace improving", days:[
+    {day:"Mon",workout:"6 miles recovery",miles:6,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 5×2mi @ 6:50 (90s jog) + 1mi CD",miles:13,pace:"WU: 8:30 | Intervals: 6:50 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 13 miles. LT pace now at MP — this is the crossover point. Intervals at 6:50 should feel hard but sustainable."},
+    {day:"Wed",workout:"15 miles easy",miles:15,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"20 miles: 11 easy + 9 @ 6:51",miles:20,pace:"Miles 1–11: 8:15 | Miles 12–20: 6:51",notes:"9 MP miles. You're spending nearly half the run at race pace. This is the most important type of session in the plan."},
+  ]},
+  { week:10, phase:"Sharpening", dates:"Jul 8–14", totalMiles:67, goal:"Sustained high mileage, MP confidence", days:[
+    {day:"Mon",workout:"6 miles recovery",miles:6,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 5×2mi @ 6:48 (90s jog) + 1mi CD",miles:13,pace:"WU: 8:30 | Intervals: 6:48 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 13 miles. LT pace now slightly faster than MP. This is the goal."},
+    {day:"Wed",workout:"15 miles easy",miles:15,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"21 miles: 11 easy + 10 @ 6:51",miles:21,pace:"Miles 1–11: 8:15 | Miles 12–21: 6:51",notes:"10 MP miles. Your longest and most specific session yet. Fuel aggressively — every 30 min starting at mile 4. Sleep and eat well the day before."},
+  ]},
+  { week:11, phase:"Sharpening", dates:"Jul 15–21", totalMiles:58, goal:"Down week — let weeks 9–10 absorb", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:"Down week. This is not optional — weeks 9 and 10 were hard."},
+    {day:"Tue",workout:"2mi WU + 6mi @ 6:50 + 1mi CD",miles:9,pace:"WU: 8:30 | Tempo: 6:50 | CD: 8:30",notes:"Total: 9 miles. Shorter but faster than early tempos."},
+    {day:"Wed",workout:"12 miles easy",miles:12,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"5 miles easy + 6 strides",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"17 miles easy",miles:17,pace:"8:00–8:20",notes:"Easy effort. No MP work on down week long run."},
+  ]},
+  { week:12, phase:"Sharpening", dates:"Jul 22–28", totalMiles:69, goal:"Near-peak mileage, most specific week so far", days:[
+    {day:"Mon",workout:"6 miles recovery",miles:6,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 6×2mi @ 6:46 (90s jog) + 1mi CD",miles:15,pace:"WU: 8:30 | Intervals: 6:46 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 15 miles. Six reps. This is a hard session. If you're hitting 6:46 comfortably, sub-3 is very much on."},
+    {day:"Wed",workout:"15 miles easy",miles:15,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"22 miles: 11 easy + 11 @ 6:51",miles:22,pace:"Miles 1–11: 8:15 | Miles 12–22: 6:51",notes:"Longest run of the plan. 11 MP miles. This is the peak fitness session. Treat race-day nutrition protocols as a full dress rehearsal."},
+  ]},
+  { week:13, phase:"Sharpening", dates:"Jul 29–Aug 4", totalMiles:70, goal:"Peak week — highest mileage of the plan", days:[
+    {day:"Mon",workout:"6 miles recovery",miles:6,pace:"9:00–9:30",notes:"Peak week begins. Keep this genuinely easy."},
+    {day:"Tue",workout:"2mi WU + 6×2mi @ 6:45 (90s jog) + 1mi CD",miles:15,pace:"WU: 8:30 | Intervals: 6:45 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 15 miles. Hardest LT session of the plan. 6:45 is 6 seconds/mile faster than goal MP — if this feels manageable, your fitness is where it needs to be."},
+    {day:"Wed",workout:"15 miles easy",miles:15,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"9 miles easy + 6 strides",miles:9,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"20 miles: 10 easy + 10 @ 6:51",miles:20,pace:"Miles 1–10: 8:15 | Miles 11–20: 6:51",notes:"Slightly shorter than week 12 but still 10 MP miles. You're in peak shape. Trust the process and don't go faster than 6:51."},
+  ]},
+  { week:14, phase:"Peak & Tune-up", dates:"Aug 5–11", totalMiles:65, goal:"First mileage reduction, sharpen speed", days:[
+    {day:"Mon",workout:"6 miles recovery",miles:6,pace:"9:00–9:30",notes:"Coming off peak week. Legs need this."},
+    {day:"Tue",workout:"2mi WU + 5×2mi @ 6:45 (90s jog) + 1mi CD",miles:13,pace:"WU: 8:30 | Intervals: 6:45 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 13 miles. Down to 5 reps but keeping the pace."},
+    {day:"Wed",workout:"14 miles easy",miles:14,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"20 miles: 11 easy + 9 @ 6:51",miles:20,pace:"Miles 1–11: 8:15 | Miles 12–20: 6:51",notes:"Last 20-miler of the plan. 9 MP miles. By now 6:51 should feel controlled, not desperate."},
+  ]},
+  { week:15, phase:"Peak & Tune-up", dates:"Aug 12–18", totalMiles:60, goal:"Down week, tune-up race opportunity", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 6mi @ 6:48 + 1mi CD",miles:9,pace:"WU: 8:30 | Tempo: 6:48 | CD: 8:30",notes:"Total: 9 miles. Short, sharp, fast."},
+    {day:"Wed",workout:"12 miles easy",miles:12,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"3 miles easy",miles:3,pace:"8:15–8:45",notes:"Short shakeout if racing Saturday."},
+    {day:"Sat",workout:"TUNE-UP RACE: 10K or Half Marathon",miles:10,pace:"Race effort",notes:"Target a local 10K or half marathon this weekend. A 10K goal: sub-41:30 (6:41/mi) confirms sub-3 fitness. A half goal: sub-1:28. Don't taper hard for this — treat it as a hard workout with a bib."},
+    {day:"Sun",workout:"11 miles easy",miles:11,pace:"8:15–8:45",notes:"Easy recovery run after tune-up race."},
+  ]},
+  { week:16, phase:"Peak & Tune-up", dates:"Aug 19–25", totalMiles:63, goal:"Last hard week before taper begins", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:""},
+    {day:"Tue",workout:"2mi WU + 4×2mi @ 6:45 (90s jog) + 1mi CD",miles:11,pace:"WU: 8:30 | Intervals: 6:45 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 11 miles. Last hard LT session. 4 reps — quality over quantity now."},
+    {day:"Wed",workout:"14 miles easy",miles:14,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"8 miles easy + 6 strides",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"18 miles: 11 easy + 7 @ 6:51",miles:18,pace:"Miles 1–11: 8:15 | Miles 12–18: 6:51",notes:"Last MP long run. 7 MP miles. You've done harder — this should feel like confirmation, not a struggle."},
+  ]},
+  { week:17, phase:"Taper", dates:"Aug 26–Sep 1", totalMiles:50, goal:"Begin taper — mileage drops, intensity maintained", days:[
+    {day:"Mon",workout:"5 miles recovery",miles:5,pace:"9:00–9:30",notes:"Taper begins. Resist the urge to do more."},
+    {day:"Tue",workout:"2mi WU + 3×2mi @ 6:45 (90s jog) + 1mi CD",miles:9,pace:"WU: 8:30 | Intervals: 6:45 | Recovery jog: 8:45 | CD: 8:30",notes:"Total: 9 miles. Volume drops but pace stays sharp."},
+    {day:"Wed",workout:"12 miles easy",miles:12,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"7 miles easy + 6 strides",miles:7,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"4 miles easy",miles:4,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"5 miles easy + 6 strides",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"16 miles: 12 easy + 4 @ 6:51",miles:16,pace:"Miles 1–12: 8:15 | Miles 13–16: 6:51",notes:"Shorter long run with just 4 MP miles to keep the legs feeling race-ready without accumulating fatigue."},
+  ]},
+  { week:18, phase:"Taper", dates:"Sep 2–8", totalMiles:38, goal:"Deep taper — legs freshen, anxiety is normal", days:[
+    {day:"Mon",workout:"4 miles recovery",miles:4,pace:"9:00–9:30",notes:"You will feel flat and slow this week. That's correct. Trust the process."},
+    {day:"Tue",workout:"1mi WU + 4mi @ 6:51 + 1mi CD",miles:6,pace:"WU: 8:30 | Tempo: 6:51 | CD: 8:30",notes:"Total: 6 miles. Short, sharp. Goal MP pace should feel easy by now."},
+    {day:"Wed",workout:"8 miles easy",miles:8,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"6 miles easy + 6 strides",miles:6,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"4 miles easy",miles:4,pace:"8:15–8:45",notes:""},
+    {day:"Sat",workout:"4 miles easy + 6 strides",miles:4,pace:"8:15–8:45",notes:""},
+    {day:"Sun",workout:"12 miles easy",miles:12,pace:"8:00–8:20",notes:"Last double-digit run. Easy effort. Just keep the engine warm."},
+  ]},
+  { week:19, phase:"Race Week", dates:"Sep 9–20", totalMiles:26, goal:"Stay loose, stay confident, race day Sep 20", days:[
+    {day:"Mon",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Tue",workout:"1mi WU + 2mi @ 6:51 + 1mi CD",miles:4,pace:"WU: 8:30 | 2mi: 6:51 | CD: 8:30",notes:"Total: 4 miles. Small reminder to your legs what race pace feels like."},
+    {day:"Wed",workout:"5 miles easy",miles:5,pace:"8:15–8:45",notes:""},
+    {day:"Thu",workout:"4 miles easy + 4 strides",miles:4,pace:"8:15–8:45",notes:""},
+    {day:"Fri",workout:"3 miles easy + 4 strides",miles:3,pace:"8:15–8:45",notes:"Keep it short. Expo day. Stay off your feet as much as possible after this."},
+    {day:"Sat",workout:"Rest — 10 min walk only",miles:0,pace:"—",notes:"Full rest. Eat well (carbs). Stay hydrated. Lay out your gear. Sleep early."},
+    {day:"Sun",workout:"🏁 Fox Cities Marathon — Goal: Sub-3:00",miles:26.2,pace:"6:51/mile",notes:"Strategy: Miles 1–6 at 6:55 (deliberately conservative). Miles 7–20 at 6:51. Miles 21–26.2: run by feel — if you've executed, you'll have legs to push. Do not go out at 6:45. The race is won in miles 18–26."},
+  ]},
+];
+
+// Build chart
+const chart = document.getElementById('chart');
+const maxMiles = 72;
+weeks.forEach((w, i) => {
+  const bar = document.createElement('div');
+  bar.className = 'chart-bar';
+  const h = Math.round((w.totalMiles / maxMiles) * 48);
+  bar.style.height = h + 'px';
+  bar.style.backgroundColor = phaseAccent[w.phase] + '88';
+  bar.title = `Week ${w.week}: ${w.totalMiles} miles`;
+  bar.addEventListener('click', () => {
+    const card = document.getElementById('week-' + i);
+    if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  bar.addEventListener('mouseenter', () => bar.style.backgroundColor = phaseAccent[w.phase]);
+  bar.addEventListener('mouseleave', () => bar.style.backgroundColor = phaseAccent[w.phase] + '88');
+  chart.appendChild(bar);
+});
+
+// Build weeks
+const weeksEl = document.getElementById('weeks');
+weeks.forEach((week, wi) => {
+  const accent = phaseAccent[week.phase];
+
+  const card = document.createElement('div');
+  card.className = 'week-card';
+  card.id = 'week-' + wi;
+  card.style.setProperty('--accent-44', accent + '44');
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'week-header';
+  header.innerHTML = `
+    <div class="week-dot" style="background:${accent}"></div>
+    <div class="week-meta">
+      <div class="week-title-row">
+        <span class="week-num">Week ${week.week}</span>
+        <span class="week-dates">${week.dates}</span>
+        <span class="week-phase" style="color:${accent}">${week.phase}</span>
+      </div>
+      <div class="week-goal">${week.goal}</div>
+    </div>
+    <div class="week-miles-box">
+      <div class="week-miles-num" style="color:${accent}">${week.totalMiles}</div>
+      <div class="week-miles-label">miles</div>
+    </div>
+    <div class="week-chevron">▼</div>
+  `;
+  header.addEventListener('click', () => {
+    const isOpen = card.classList.toggle('open');
+    header.querySelector('.week-chevron').textContent = isOpen ? '▲' : '▼';
+  });
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'week-body';
+
+  week.days.forEach((day, di) => {
+    const row = document.createElement('div');
+    row.className = 'day-row';
+
+    const dh = document.createElement('div');
+    dh.className = 'day-header';
+    dh.innerHTML = `
+      <div class="day-label">${day.day}</div>
+      <div class="day-info">
+        <div class="day-workout">${day.workout}</div>
+        <div class="day-pace">${day.pace}</div>
+      </div>
+      <div class="day-right">
+        <span class="day-mi">${day.miles > 0 ? day.miles + ' mi' : '—'}</span>
+        ${day.notes ? '<span class="day-chevron">▼</span>' : ''}
+      </div>
+    `;
+
+    if (day.notes) {
+      const dn = document.createElement('div');
+      dn.className = 'day-notes';
+      dn.innerHTML = `<div class="day-notes-inner" style="border-left-color:${accent}44">${day.notes}</div>`;
+      dh.addEventListener('click', () => {
+        const isOpen = row.classList.toggle('open');
+        dh.querySelector('.day-chevron').textContent = isOpen ? '▲' : '▼';
+      });
+      row.appendChild(dh);
+      row.appendChild(dn);
+    } else {
+      row.appendChild(dh);
+    }
+    body.appendChild(row);
+  });
+
+  // Week total
+  const wt = document.createElement('div');
+  wt.className = 'week-total';
+  wt.innerHTML = `<span>Week total: <strong style="color:${accent}">${week.totalMiles} miles</strong></span>`;
+  body.appendChild(wt);
+
+  card.appendChild(header);
+  card.appendChild(body);
+  weeksEl.appendChild(card);
+});
+
+// Race strategy
+weeksEl.insertAdjacentHTML('beforeend', `
+  <div id="race-strategy">
+    <div class="strategy-title">Race Day Strategy</div>
+    <div class="strategy-body">
+      <strong>Miles 1–6:</strong> 6:55/mile — deliberately conservative. The temptation to go faster will be strong. Resist.<br>
+      <strong>Miles 7–20:</strong> 6:51/mile — lock in and execute. This should feel controlled, not labored.<br>
+      <strong>Miles 21–26.2:</strong> Run by feel. If you've executed the plan, you'll have legs. Push.<br>
+      <strong>Fueling:</strong> Every 30–40 minutes from mile 4 onward. Practice this in training. Don't experiment on race day.
+    </div>
+  </div>
+`);
+</script> </body> </html>
